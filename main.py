@@ -56,12 +56,17 @@ class Dialog():
        
         
         self.response['response']['text'] = 'Привет! Добро пожаловать в навык "Прогулки с Алисой". Хотите прогуляться?'
-          
+        self.response['response']['buttons'] = [{'title': 'Что ты умеешь?', 'hide': True},
+                                                 {'title': 'Помощь', 'hide': True] 
         return
+
         
     def make_dialog_line(self, req):
         self.update_response()
         if self.stage == 1:
+            if req['request']['original_utterance'].lower() == 'что ты умеешь?':
+                self.response['response']['text'] = 'Я могу составить маршрут для вашей потенциальной прогулки, учитывая время, которое бы вы желали гулять. Также я буду предупреждать вас о возможном ухудшении погоды'
+                return
             agree_for_playing = get_agreement(req)
             if agree_for_playing is None:
                 self.response['response']['text'] = 'Я не очень поняла вас'

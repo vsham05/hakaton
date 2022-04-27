@@ -57,7 +57,7 @@ class Dialog():
         
         self.response['response']['text'] = 'Привет! Добро пожаловать в навык "Прогулки с Алисой". Хотите прогуляться?'
         self.response['response']['buttons'] = [{'title': 'Что ты умеешь?', 'hide': True},
-                                                 {'title': 'Помощь', 'hide': True] 
+                                                 {'title': 'Помощь', 'hide': True}] 
         return
 
         

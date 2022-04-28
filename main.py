@@ -55,7 +55,7 @@ class Dialog():
         self.user_id = user_id
        
         
-        self.response['response']['text'] = 'Привет! Добро пожаловать в навык "Прогулки с Алисой". Хотите прогуляться?'
+        self.response['response']['text'] = 'Привет! Добро пожаловать в навык "Вечерние Прогулки". Хотите прогуляться?'
         self.response['response']['buttons'] = [{'title': 'Что ты умеешь?', 'hide': True},
                                                  {'title': 'Помощь', 'hide': True}] 
         return
@@ -65,7 +65,7 @@ class Dialog():
         self.update_response()
         if self.stage == 1:
             if req['request']['original_utterance'].lower() == 'что ты умеешь?':
-                self.response['response']['text'] = 'Я могу составить маршрут для вашей потенциальной прогулки, учитывая время, которое бы вы желали гулять. Также я буду предупреждать вас о возможном ухудшении погоды'
+                self.response['response']['text'] = 'Я могу составить маршрут для вашей потенциальной прогулки, учитывая время, которое бы вы желали гулять. Также я буду предупреждать вас о возможном ухудшении погоды. Давайте вернемся к предыдущему пункту.'
                 return
             agree_for_playing = get_agreement(req)
             if agree_for_playing is None:

@@ -95,13 +95,14 @@ class Dialog():
             elif not agree_for_playing:
                 self.response['response']['text'] = 'Наверное, так будет лучше. До свидания!'
                 self.response['response']['end_session'] = True
+                return
+            self.make_info(street)
         
         elif self.stage == 3:
             street  = self.get_street(req)
             if street is None:
                 self.response['response']['text'] = 'Я не очень поняла вас.'
             else:
-                self.make_info(street)
                 self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
                 self.response['response']['card'] = {}
                 self.response['response']['card']['type'] = 'BigImage'

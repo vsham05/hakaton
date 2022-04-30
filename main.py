@@ -99,7 +99,7 @@ class Dialog():
         elif self.stage == 3:
             street  = self.get_street(req)
             if street is None:
-                self.response['response']['text'] = 'Я не очень поняла вас'
+                self.response['response']['text'] = 'Я не очень поняла вас.'
             else:
                 self.make_info(street)
                 self.image_id = self.upload_image(street + self.city + '.png')['image']['id']

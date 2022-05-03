@@ -113,13 +113,13 @@ class Dialog():
             return
         elif self.stage == 4:
             try:
-                street  = self.get_street(req)
-                if street is None:
+                self.street  = self.get_street(req)
+                if self.street is None:
                     self.response['response']['text'] = 'Я не очень поняла вас.'
                 else:
                     self.response['response']['text'] = 'Вы готовы начать ' + ('прогулку'  if not self.car else 'поездку') + '?'
                     self.stage = 5
-                    self.make_info(street, self.car)
+                    self.make_info(self.street, self.car)
             except:
                 self.response['response']['text'] = 'Я не смогла найти вашу улицу. Пожалуйста, повторите.'
                 return
@@ -128,7 +128,7 @@ class Dialog():
             if ready is None:
                 self.response['response']['text'] = 'Я не очень поняла вас. Пожалуйста, скажите "Да" или "Нет".'
             elif ready:
-                self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
+                self.image_id = self.upload_image(self.street + self.city + '.png')['image']['id']
                 self.response['response']['card'] = {}
                 self.response['response']['card']['type'] = 'BigImage'
                 self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '')

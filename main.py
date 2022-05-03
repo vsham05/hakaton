@@ -65,8 +65,8 @@ class Dialog():
         self.update_response()
         if self.stage == 1:
             if req['request']['original_utterance'].lower() in ['что ты умеешь?', 'помощь']:
-                self.response['response']['text'] = 'Скажите название своего города, если окажется, что погода не подходит для вечерней поездки, я вам сообщу. \n Вы укажите как вы будете передвигаться: на транспортном средстве или пешком. В зависимости от этого я дам вам информацию о пробках в этом районе\n После этого назовите улицу, на которую собираетесь съездить. Я отправлю вам карту указанной улицы.'
-                self.response['response']['tts'] = 'Скажите название своего города, если окажется, что погода не подходит для вечерней поездки, я вам сообщу. \n Вы ук+ажите как вы б+удете передвиг+аться: на транспортном средстве или пешком. В зависимости от этого я дам вам информ+ацию о пр+обках в этом рай+оне\n П+осле этого назов+ите улицу, на кот+орую собир+аетесь съ+ездить. Я отпр+авлю вам к+арту ук+азанной улицы.'
+                self.response['response']['text'] = 'Скажите название своего города, если окажется, что погода не подходит для вечерней прогулки, я вам сообщу. \n Вы укажите как вы будете передвигаться: на транспортном средстве или пешком. В зависимости от этого я дам вам информацию о пробках в этом районе\n После этого назовите улицу, на которую собираетесь пойти. Я отправлю вам карту указанной улицы.'
+                self.response['response']['tts'] = 'Скажите название своего города, если окажется, что погода не подходит для вечерней прогулки, я вам сообщу. \n Вы ук+ажите как вы б+удете передвиг+аться: на транспортном средстве или пешком. В зависимости от этого я дам вам информ+ацию о пр+обках в этом рай+оне\n П+осле этого назов+ите улицу, на кот+орую собир+аетесь пойти. Я отпр+авлю вам к+арту ук+азанной улицы.'
                 return
             self.city = self.get_city(req)
             if self.city is None:
@@ -99,7 +99,7 @@ class Dialog():
                 self.response['response']['text'] = 'Наверное, так будет лучше. До свидания!'
                 self.response['response']['end_session'] = True
                 return
-            self.make_info(street)
+
         elif self.stage == 3:
             self.car = get_agreement(req)
             if self.car is None:
@@ -109,18 +109,19 @@ class Dialog():
                 self.stage = 4
             elif not self.car:
                 self.response['response']['text'] = 'Ходить гулять пешком очень полезно. На какую улицу хотите пойти?'
-                self.stage = 4
-                return
+                self.stage = 4    
+            return
         elif self.stage == 4:
             try:
                 street  = self.get_street(req)
                 if street is None:
                     self.response['response']['text'] = 'Я не очень поняла вас.'
                 else:
+                    self.make_info(street, self.car)
                     self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
                     self.response['response']['card'] = {}
                     self.response['response']['card']['type'] = 'BigImage'
-                    self.response['response']['card']['title'] = f'Удачного пути! Цветными линиями обозначен уровень пробок.'
+                    self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '')
                     self.response['response']['card']['image_id'] = self.image_id   
                     self.response['response']['text'] = 'Ой'
                     self.response['response']['end_session'] = True
@@ -137,7 +138,7 @@ class Dialog():
                      headers={'Authorization': self.AUTH_TOKEN}).json()
 
 
-    def make_info(self, place):
+    def make_info(self, place, car):
         geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
         
         geocoder_params = {
@@ -156,7 +157,7 @@ class Dialog():
         map_params = {
         "ll": f'{toponym_longitude},{toponym_lattitude}',
         "spn": f'0.005,0.005',
-        "l": 'map,trf'
+        "l": 'map' + (',trf' if car else '')
     }
         map_api_server = "http://static-maps.yandex.ru/1.x/"
 

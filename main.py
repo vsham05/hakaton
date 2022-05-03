@@ -131,14 +131,23 @@ class Dialog():
                 self.image_id = self.upload_image(self.street + self.city + '.png')['image']['id']
                 self.response['response']['card'] = {}
                 self.response['response']['card']['type'] = 'BigImage'
-                self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '')
+                self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '') + '. Вы хотите найти еще что-нибудь?'
                 self.response['response']['card']['image_id'] = self.image_id   
                 self.response['response']['text'] = 'Ой'
-                self.response['response']['end_session'] = True
+                self.stage = 6
             elif not ready:
                 self.response['response']['text'] = 'Жаль, что вы передумали.'
                 self.response['response']['end_session'] = True
-                    
+        elif self.stage == 6:
+            regame = get_agreement(req)
+            if regame is None:
+                self.response['response']['text'] = 'Я не очень поняла вас. Пожалуйста, скажите "Да" или "Нет".'
+            elif regame:  
+                self.response['response']['text'] = 'Отлично. Назовите город.'
+                self.stage = 1
+            else:
+                self.response['response']['text']  = 'Удачного вам дня!'
+                self.response['response']['end_session'] = True
                 
                 
     def upload_image(self, image_name):

@@ -54,8 +54,8 @@ class Dialog():
         self.user_id = user_id
        
         
-        self.response['response']['text'] = 'Привет! Добро пожаловать в навык "Вечерние Поездки". Скажите название своего города, чтобы начать поездку!'
-        self.response['response']['tts'] = 'Привет! Добро пож+аловать в навык "Вечерние Поездки". Скаж+ите название своего города, чтобы начать поезтку!'
+        self.response['response']['text'] = 'Привет! Добро пожаловать в навык "Вечерние Прогулки". Назвав свой город и улицу, на которую вы хотите пойти, вы получите информацию о том, подходящая ли погода для прогулки, и карту нужной вам улицы, чтобы вы смогли продумать маршрут \n . Скажите название своего города, чтобы начать прогулку!'
+        self.response['response']['tts'] = 'Привет! Добро пожаловать в навык "Вечерние Прогулки". Назвав свой город и улицу, на которую вы хотите пойти, вы получите информацию о том, подходящая ли погода для прогулки, и карту нужной вам улицы, чтобы вы смогли продумать маршрут \n . Скажите название своего города, чтобы начать прогулку!'
         self.response['response']['buttons'] = [{'title': 'Что ты умеешь?', 'hide': True},
                                                  {'title': 'Помощь', 'hide': True}] 
         return
@@ -65,8 +65,8 @@ class Dialog():
         self.update_response()
         if self.stage == 1:
             if req['request']['original_utterance'].lower() in ['что ты умеешь?', 'помощь']:
-                self.response['response']['text'] = 'Я могу предоставить сведения, которые могут оказаться полезными перед поездкой:\n Погода \n Состояние на дорогах.\n  Для этого просто скажите имя нужного вам города и улицу, на которую вы хотите проехать.'
-                self.response['response']['tts'] = 'Я могу предост+авить сведения, которые могут оказаца полезными перед поездкой, а именно sil <[150]> \n Погода sil <[150]> \n Состояние на дорогах. \n  Для этого просто скажите имя нужного вам города и улицу, на которую вы хотите проехать.'
+                self.response['response']['text'] = 'Скажите название своего города, если окажется, что погода не подходит для вечерней поездки, я вам сообщу. \n Вы укажите как вы будете передвигаться: на транспортном средстве или пешком. В зависимости от этого я дам вам информацию о пробках в этом районе\n После этого назовите улицу, на которую собираетесь съездить. Я отправлю вам карту указанной улицы.'
+                self.response['response']['tts'] = 'Скажите название своего города, если окажется, что погода не подходит для вечерней поездки, я вам сообщу. \n Вы ук+ажите как вы б+удете передвиг+аться: на транспортном средстве или пешком. В зависимости от этого я дам вам информ+ацию о пр+обках в этом рай+оне\n П+осле этого назов+ите улицу, на кот+орую собир+аетесь съ+ездить. Я отпр+авлю вам к+арту ук+азанной улицы.'
                 return
             self.city = self.get_city(req)
             if self.city is None:
@@ -74,10 +74,13 @@ class Dialog():
             else:
                 weather = get_weather(self.city)
                 if weather == 'Хорошая':
-                    self.response['response']['text'] = 'Отлично! Куда вы хотите поехать?'
+                    self.response['response']['text'] = choice(['Отлично! Погода должна быть хорошей. Вы хотите использовать транспортное средство?',
+                                                               'Погода стоит хорошая. Вы собираетесь отправиться на транспортном средстве?',
+                                                               'День будет ясным! Вы собираетесь отправиться на транспортном средстве?' ])
                     self.stage = 3
                 elif weather == 'Плохая':
-                    self.response['response']['text'] = 'Хорошо, но хочу Вас предупредить, погода не очень хорошая. Не забудьте зонтик! Куда вы хотите поехать?'
+                    self.response['response']['text'] = choice([ 'Хорошо, но хочу Вас предупредить, погода не очень хорошая. Не забудьте зонтик! Вы хотите использовать транспортное средство?',
+                                                                 'На улице сыро. Наденьте одежду потеплее. Вы собираетесь отправиться на транспортном средстве?'])
                     self.stage = 3
                 elif weather == 'Ужасная':
                     self.response['response']['text'] = 'Сомневаюсь, что это будет безопасная поездка, в такую погоду. Вы всё ещё уверены?'
@@ -86,32 +89,45 @@ class Dialog():
             return
 
         elif self.stage == 2:
-
+          
             agree_for_playing = get_agreement(req)
             if agree_for_playing is None:
                 self.response['response']['text'] = 'Я не очень поняла вас'
             elif agree_for_playing:
-                 self.response['response']['text'] = 'Если что, я вас предупреждала! Куда вы хотите поехать?'
+                 self.response['response']['text'] = 'Если что, я вас предупреждала! Вы собираетесь отправиться на транспортном средстве?'
             elif not agree_for_playing:
                 self.response['response']['text'] = 'Наверное, так будет лучше. До свидания!'
                 self.response['response']['end_session'] = True
                 return
             self.make_info(street)
-        
         elif self.stage == 3:
-            street  = self.get_street(req)
-            if street is None:
-                self.response['response']['text'] = 'Я не очень поняла вас.'
-            else:
-                self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
-                self.response['response']['card'] = {}
-                self.response['response']['card']['type'] = 'BigImage'
-                self.response['response']['card']['title'] = f'Удачного пути! Цветными линиями обозначен уровень пробок.'
-                self.response['response']['card']['image_id'] = self.image_id   
-                self.response['response']['text'] = 'Ой'
-                self.response['response']['end_session'] = True
+            self.car = get_agreement(req)
+            if self.car is None:
+                self.response['response']['text'] = 'Я не очень поняла вас. Пожалуйста, скажите "Да" или "Нет".'
+            elif self.car:
+                self.response['response']['text'] = 'Отлично. Я добавлю для вас информацию о пробках на дорогах. На какую улицу хотите поехать?'
+                self.stage = 4
+            elif not self.car:
+                self.response['response']['text'] = 'Ходить гулять пешком очень полезно. На какую улицу хотите пойти?'
+                self.stage = 4
+                return
+        elif self.stage == 4:
+            try:
+                street  = self.get_street(req)
+                if street is None:
+                    self.response['response']['text'] = 'Я не очень поняла вас.'
+                else:
+                    self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
+                    self.response['response']['card'] = {}
+                    self.response['response']['card']['type'] = 'BigImage'
+                    self.response['response']['card']['title'] = f'Удачного пути! Цветными линиями обозначен уровень пробок.'
+                    self.response['response']['card']['image_id'] = self.image_id   
+                    self.response['response']['text'] = 'Ой'
+                    self.response['response']['end_session'] = True
                 
-            return
+                return
+            except:
+                self.response['response']['text'] = 'Я не смогла найти вашу улицу. Пожалуйста, повторите.'
 
 
     def upload_image(self, image_name):

@@ -117,20 +117,30 @@ class Dialog():
                 if street is None:
                     self.response['response']['text'] = 'Я не очень поняла вас.'
                 else:
+                    self.response['response']['text'] = 'Вы готовы начать ' + ('прогулку'  if not self.car else 'поездку') + '?'
+                    self.stage = 5
                     self.make_info(street, self.car)
-                    self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
-                    self.response['response']['card'] = {}
-                    self.response['response']['card']['type'] = 'BigImage'
-                    self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '')
-                    self.response['response']['card']['image_id'] = self.image_id   
-                    self.response['response']['text'] = 'Ой'
-                    self.response['response']['end_session'] = True
-                
-                return
             except:
                 self.response['response']['text'] = 'Я не смогла найти вашу улицу. Пожалуйста, повторите.'
-
-
+                return
+        elif self.stage == 5:
+            ready = get_agreement(req)
+            if ready is None:
+                self.response['response']['text'] = 'Я не очень поняла вас. Пожалуйста, скажите "Да" или "Нет".'
+            elif ready:
+                self.image_id = self.upload_image(street + self.city + '.png')['image']['id']
+                self.response['response']['card'] = {}
+                self.response['response']['card']['type'] = 'BigImage'
+                self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '')
+                self.response['response']['card']['image_id'] = self.image_id   
+                self.response['response']['text'] = 'Ой'
+                self.response['response']['end_session'] = True
+            elif not ready:
+                self.response['response']['text'] = 'Жаль, что вы передумали.'
+                self.response['response']['end_session'] = True
+                    
+                
+                
     def upload_image(self, image_name):
         with open(image_name, 'rb') as img:
             return requests.post('https://dialogs.yandex.net/api/v1/skills/f3760eb7-94ec-43f1-8d19-eb5a0ce1caa7/images', 

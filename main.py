@@ -131,7 +131,7 @@ class Dialog():
                 self.image_id = self.upload_image(self.street + self.city + '.png')['image']['id']
                 self.response['response']['card'] = {}
                 self.response['response']['card']['type'] = 'BigImage'
-                self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '') + '. Вы хотите найти еще что-нибудь?'
+                self.response['response']['card']['title'] = f'Удачного пути!' + ('Цветными линиями обозначен уровень пробок.' if self.car else '') + ' Вы хотите найти еще что-нибудь?'
                 self.response['response']['card']['image_id'] = self.image_id   
                 self.response['response']['text'] = 'Ой'
                 self.stage = 6

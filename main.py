@@ -119,7 +119,7 @@ class Dialog():
                 else:
                     self.response['response']['text'] = 'Вы готовы начать ' + ('прогулку'  if not self.car else 'поездку') + '?'
                     self.stage = 5
-                    self.make_info(self.street, self.car)
+                    self.make_info(self.city + ', ' + self.street, self.car)
             except:
                 self.response['response']['text'] = 'Я не смогла найти вашу улицу. Пожалуйста, повторите.'
                 return

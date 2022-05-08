@@ -1,11 +1,11 @@
-from flask import Flask, request
+from flask import Flask, request, Blueprint
 import logging
 import requests
 import json
 import os
 from random import choice
 from weather import get_weather
-app = Flask(__name__)
+evening_walks = Blueprint('evening_walks', __name__)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -15,14 +15,11 @@ dialogs = {}
 def get_agreement(req):
         if 'да' in req['request']['original_utterance'].lower():
             return True
-        elif 'не' in req['request']['original_utterance'].lower():
+
+        if 'не' in req['request']['original_utterance'].lower():
             return False
-        else:
-            return None
 
-
-def make_a_trip():
-    pass
+        return None
 
 def get_walking_time(req):
     time = 0
@@ -34,10 +31,10 @@ def get_walking_time(req):
     time_counting = req['request']['original_utterance'].split()[1].lower()
     if time_counting == 'минут':
         return time 
-    elif time_counting in ['часа', 'часов']:
+    if time_counting in ['часа', 'часов']:
         return time * 60
-    else:
-        return 'error'
+    
+    return 'error'
 
 
 class Dialog():
@@ -58,7 +55,7 @@ class Dialog():
         self.response['response']['tts'] = 'Привет! Добро пожаловать в навык "Вечерние Прогулки". Назвав свой город и улицу, на которую вы хотите пойти, вы получите информацию о том, подходящая ли погода для прогулки, и карту нужной вам улицы, чтобы вы смогли продумать маршрут \n . Скажите название своего города, чтобы начать прогулку!'
         self.response['response']['buttons'] = [{'title': 'Что ты умеешь?', 'hide': True},
                                                  {'title': 'Помощь', 'hide': True}] 
-        return
+        
 
         
     def make_dialog_line(self, req):
@@ -214,7 +211,7 @@ class Dialog():
             # возвращаем None, если не нашли сущности с типом YANDEX.GEO
                 return entity['value'].get('street', None)
 
-@app.route('/post', methods=['POST'])
+@evening_walks.route('/', methods=['POST'])
 def main():
     logging.info(f'Request: {request.json!r}')
      

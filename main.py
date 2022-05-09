@@ -5,7 +5,7 @@ import json
 import os
 from random import choice
 from weather import get_weather
-evening_walks = Blueprint('evening_walks', __name__)
+app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -75,11 +75,11 @@ class Dialog():
                                                                'Погода стоит хорошая. Вы собираетесь отправиться на транспортном средстве?',
                                                                'День будет ясным! Вы собираетесь отправиться на транспортном средстве?' ])
                     self.stage = 3
-                elif weather == 'Плохая':
+                if weather == 'Плохая':
                     self.response['response']['text'] = choice([ 'Хорошо, но хочу Вас предупредить, погода не очень хорошая. Не забудьте зонтик! Вы хотите использовать транспортное средство?',
                                                                  'На улице сыро. Наденьте одежду потеплее. Вы собираетесь отправиться на транспортном средстве?'])
                     self.stage = 3
-                elif weather == 'Ужасная':
+                if weather == 'Ужасная':
                     self.response['response']['text'] = 'Сомневаюсь, что это будет безопасная поездка, в такую погоду. Вы всё ещё уверены?'
                     self.stage = 2
 
@@ -211,7 +211,7 @@ class Dialog():
             # возвращаем None, если не нашли сущности с типом YANDEX.GEO
                 return entity['value'].get('street', None)
 
-@evening_walks.route('/', methods=['POST'])
+@evening_walks.route('/post', methods=['POST'])
 def main():
     logging.info(f'Request: {request.json!r}')
      

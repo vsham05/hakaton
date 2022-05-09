@@ -211,7 +211,7 @@ class Dialog():
             # возвращаем None, если не нашли сущности с типом YANDEX.GEO
                 return entity['value'].get('street', None)
 
-@evening_walks.route('/post', methods=['POST'])
+@app.route('/post', methods=['POST'])
 def main():
     logging.info(f'Request: {request.json!r}')
      

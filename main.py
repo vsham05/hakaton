@@ -92,6 +92,7 @@ class Dialog():
                 self.response['response']['text'] = 'Я не очень поняла вас'
             elif agree_for_playing:
                  self.response['response']['text'] = 'Если что, я вас предупреждала! Вы собираетесь отправиться на транспортном средстве?'
+                 self.stage = 3
             elif not agree_for_playing:
                 self.response['response']['text'] = 'Наверное, так будет лучше. До свидания!'
                 self.response['response']['end_session'] = True
